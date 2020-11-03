@@ -1,3 +1,4 @@
+import javax.sound.midi.SoundbankResource;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -80,19 +81,15 @@ public class GameHangman {
                             fileInputStream = new FileInputStream(fileName);
                             bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream));
                             while ((message = bufferedReader.readLine()) != null){
-
-                                String[] arrOfStr = message.split("-", 2);
-                                String[] minute = arrOfStr[1].split("menit", 2);
-                                int menit = Integer.parseInt(minute[0].trim());
-                                System.out.println(menit);
-                                String[] second = arrOfStr[1].split("detik", 2);
-                                int detik = Integer.parseInt(second[0].trim());
-                                String[] millis = arrOfStr[1].split("ms", 2);
-                                int ms = Integer.parseInt(millis[0].trim());
-                                int result = menit + detik + ms;
-
+                                String[] strings = message.split("-");
+                                String[] split1 = strings[1].split("menit");
+                                long menit = Long.parseLong(split1[0].trim());
+                                String[] split2 = split1[1].split("detik");
+                                long detik = Long.parseLong(split2[0].trim());
+                                String[] split3 = split2[1].split("ms");
+                                long ms = Long.parseLong(split3[0].trim());
+                                long result = menit + detik + ms;
                                 listScore.add(result + "-" + message);
-
                             }
 
                             Collections.sort(listScore);
@@ -105,6 +102,7 @@ public class GameHangman {
                                     String[] arrOfStr = temp.split("-", 2);
                                     printStream.println(arrOfStr[1]);
                                     System.out.println((tempInt+1) + ". " + message);
+                                    tempInt++;
                                 }
                             } catch (IOException io){
                                 io.printStackTrace();
@@ -119,14 +117,15 @@ public class GameHangman {
                             }
 
                         } catch (IOException e){
-                            e.printStackTrace();
+                            System.out.println("Tidak memiliki score leader board");
                         } finally {
-                            try {
-                                assert bufferedReader != null;
-                                bufferedReader.close();
-                                fileInputStream.close();
-                            } catch (IOException e){
-                                e.printStackTrace();
+                            if (bufferedReader != null){
+                                try {
+                                    bufferedReader.close();
+                                    fileInputStream.close();
+                                } catch (IOException e){
+                                    e.printStackTrace();
+                                }
                             }
                         }
                     }
@@ -165,8 +164,8 @@ public class GameHangman {
                 long milis = milliseconds - (minutes * 60000) - (seconds * 1000);
                 System.out.println("Jawaban = " + word);
                 System.out.println("Anda Menang!");
-                String time = minutes + " minutes and " + seconds + " seconds "+ milis + "ms";
-                System.out.format("Waktu Anda : %d menit and %d detik %d ms", minutes, seconds, milis);
+                String time = minutes + "menit dan " + seconds + "detik dan "+ milis + "ms";
+                System.out.format("Waktu Anda : %d menit dan %d detik dan %d ms", minutes, seconds, milis);
                 System.out.println();
                 System.out.print("Masukkan Nama Anda : ");
 

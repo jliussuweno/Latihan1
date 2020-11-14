@@ -22,7 +22,7 @@ public class GameHangman {
             FileOutputStream fileOutputStream = null;
             PrintStream printStream = null;
 
-            while (menu != 3) {
+            while (menu != 3){
                 System.out.println("======================");
                 System.out.println("HANGMAN BUAH-BUAHAN");
                 System.out.println("======================");
@@ -31,47 +31,9 @@ public class GameHangman {
                 System.out.println("3. Keluar");
                 System.out.print("Input : ");
                 try {
-                    ms1 = System.currentTimeMillis();
                     menu = Integer.parseInt(stdin.readLine());
                     if (menu == 1){
-                        asterisk = new String(new char[word.length()]).replace("\0", "*");
-                        System.out.println("HANGMAN BUAH-BUAHAN");
-                        System.out.println("======================");
-                        System.out.println("Nyawa anda tersisa Angka : " + nyawa);
-                        System.out.println();
-                        System.out.println();
-                        System.out.println();
-                        System.out.println();
-                        System.out.println("___|___");
-                        System.out.println("HANGMAN -->" + asterisk);
-                        System.out.println();
-                        try {
-                            while (count <= nyawa && asterisk.contains("*")) {
-                                System.out.print("Masukkan jawaban [A-Z] : ");
-                                String guess = stdin.readLine();
-                                String regex = "^[a-zA-Z]+$";
-
-                                if (guess.length() > 1){
-                                    System.out.println("Input hanya boleh 1 huruf.");
-                                } else if (!guess.matches(regex)) {
-                                    System.out.println("Input hanya boleh 1 huruf.");
-                                } else if (guess.length() == 1){
-                                    char letter = guess.charAt(0);
-                                    if (Character.isUpperCase(letter)){
-                                        hang(guess);
-                                    } else {
-                                        System.out.println("Input huruf " + guess.toUpperCase() + " salah!");
-                                    }
-                                }
-
-                            }
-
-                        } catch (NumberFormatException nfe) {
-                            System.out.println("You must be input number value!");
-                            System.out.println("System Terminate");
-                        } catch (Exception e){
-                            e.printStackTrace();
-                        }
+                        mainMain();
                     } else if (menu == 2){
                         String message;
                         FileInputStream fileInputStream = null;
@@ -89,19 +51,20 @@ public class GameHangman {
                                 String[] split3 = split2[1].split("ms");
                                 long ms = Long.parseLong(split3[0].trim());
                                 long result = menit + detik + ms;
-                                listScore.add(result + "-" + message);
+                                listScore.add(result + "&" + message);
                             }
 
-                            Collections.sort(listScore);
+                            Collections.sort(listScore, Collections.reverseOrder());
+                            System.out.println(listScore);
 
                             try {
                                 fileOutputStream = new FileOutputStream(fileName);
                                 printStream = new PrintStream(fileOutputStream);
                                 int tempInt = 0;
                                 for (String temp : listScore) {
-                                    String[] arrOfStr = temp.split("-", 2);
+                                    String[] arrOfStr = temp.split("&");
                                     printStream.println(arrOfStr[1]);
-                                    System.out.println((tempInt+1) + ". " + message);
+                                    System.out.println((tempInt+1) + ". " + arrOfStr[1]);
                                     tempInt++;
                                 }
                             } catch (IOException io){
@@ -130,8 +93,80 @@ public class GameHangman {
                         }
                     }
                 } catch (Exception io){
-                    io.printStackTrace();
+                    System.out.println("Terjadi kesalahan, ulangi program kembali!");
                 }
+            }
+        }
+
+        public static void mainMain(){
+            ms1 = System.currentTimeMillis();
+            BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
+            asterisk = new String(new char[word.length()]).replace("\0", "*");
+            System.out.println("HANGMAN BUAH-BUAHAN");
+            System.out.println("======================");
+            System.out.println("Nyawa anda tersisa Angka : " + nyawa);
+            System.out.println();
+            System.out.println();
+            System.out.println();
+            System.out.println();
+            System.out.println("___|___");
+            System.out.println("HANGMAN -->" + asterisk);
+            System.out.println();
+            try {
+                while (count < nyawa && asterisk.contains("*")) {
+                    System.out.print("Masukkan jawaban [A-Z] : ");
+                    String guess = stdin.readLine();
+                    String regex = "^[a-zA-Z]+$";
+
+                    if (guess.length() > 1){
+                        System.out.println("Input hanya boleh 1 huruf.");
+                    } else if (!guess.matches(regex)) {
+                        System.out.println("Input hanya boleh 1 huruf.");
+                    } else if (guess.length() == 1){
+                        char letter = guess.charAt(0);
+                        if (Character.isUpperCase(letter)){
+                            hang(guess);
+                        } else {
+                            System.out.println("Input huruf " + guess.toUpperCase() + " salah!");
+                        }
+                    }
+
+                    if (count == 5){
+                        BufferedReader stdin1 = new BufferedReader(new InputStreamReader(System.in));
+                        System.out.print("Anda mau bermain lagi? [ya/tidak] : ");
+                        try {
+                            mainLagi = stdin1.readLine();
+                            if (mainLagi.equals("ya")) {
+                                count = 0;
+                                nyawa = 5;
+                                System.out.println("sampe sini");
+                                mainMain();
+                            } else if (mainLagi.equals("tidak")) {
+                                count = 0;
+                                menu = 3;
+                                nyawa = 5;
+                            } else {
+                                count = 0;
+                                menu = 3;
+                                nyawa = 5;
+                                System.out.println("Silahkan masukkan [ya/tidak]");
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            count = 0;
+                            menu = 3;
+                            nyawa = 5;
+                            System.out.println("Silahkan masukkan [ya/tidak]");
+                        }
+                    }
+
+                }
+
+            } catch (NumberFormatException nfe) {
+                System.out.println("You must be input number value!");
+                System.out.println("System Terminate");
+            } catch (Exception e){
+                e.printStackTrace();
             }
         }
 
@@ -164,8 +199,8 @@ public class GameHangman {
                 long milis = milliseconds - (minutes * 60000) - (seconds * 1000);
                 System.out.println("Jawaban = " + word);
                 System.out.println("Anda Menang!");
-                String time = minutes + "menit dan " + seconds + "detik dan "+ milis + "ms";
-                System.out.format("Waktu Anda : %d menit dan %d detik dan %d ms", minutes, seconds, milis);
+                String time = minutes + "menit " + seconds + "detik "+ milis + "ms";
+                System.out.format("Waktu Anda : %d menit %d detik %d ms", minutes, seconds, milis);
                 System.out.println();
                 System.out.print("Masukkan Nama Anda : ");
 
@@ -177,6 +212,34 @@ public class GameHangman {
                     fileOutputStream = new FileOutputStream(fileName, true);
                     printStream = new PrintStream(fileOutputStream);
                     printStream.println(nama + " - " + time);
+
+                    BufferedReader stdin1 = new BufferedReader(new InputStreamReader(System.in));
+                    System.out.print("Anda mau bermain lagi? [ya/tidak] : ");
+                    try {
+                        mainLagi = stdin1.readLine();
+                        if (mainLagi.equals("ya")) {
+                            count = 0;
+                            nyawa = 5;
+                            System.out.println("sampe sini");
+                            mainMain();
+                        } else if (mainLagi.equals("tidak")) {
+                            count = 0;
+                            menu = 3;
+                            nyawa = 5;
+                        } else {
+                            count = 0;
+                            menu = 3;
+                            nyawa = 5;
+                            System.out.println("Silahkan masukkan [ya/tidak]");
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        count = 0;
+                        menu = 3;
+                        nyawa = 5;
+                        System.out.println("Silahkan masukkan [ya/tidak]");
+                    }
+
                 } catch (Exception e){
                     System.out.print("Silahkan Masukkan Nama yang benar!");
                 } finally {
@@ -195,6 +258,7 @@ public class GameHangman {
         }
 
         public static void hangmanImage() {
+
             if (count == 1) {
                 System.out.println("HANGMAN BUAH-BUAHAN");
                 System.out.println("======================");
@@ -253,7 +317,6 @@ public class GameHangman {
                 System.out.println("___|___");
             }
             if (count == 5) {
-                BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
                 System.out.println("HANGMAN BUAH-BUAHAN");
                 System.out.println("======================");
                 System.out.println("Nyawa anda tersisa Angka : " + (nyawa - count));
@@ -269,20 +332,6 @@ public class GameHangman {
                 System.out.println("___|___      /   \\");
                 System.out.println("Nyawa Anda Habis.");
                 System.out.println("Anda Kalah!");
-                System.out.print("Anda mau bermain lagi? [ya/tidak] : ");
-                try {
-                    mainLagi = stdin.readLine();
-                    if (mainLagi.equals("ya")){
-                        menu = 1;
-                    } else if (mainLagi.equals("tidak")){
-                        menu = 3;
-                    } else {
-                        System.out.println("Silahkan masukkan [ya/tidak]");
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    System.out.println("Silahkan masukkan [ya/tidak]");
-                }
             }
         }
 }
